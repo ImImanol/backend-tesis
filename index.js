@@ -1,10 +1,9 @@
-// backend/index.js
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const multer = require("multer");
-const path = require("path"); // Importar path para manejar las rutas
+const path = require("path");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
@@ -16,25 +15,27 @@ const { auth, adminAuth } = require("./middleware/auth");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware para permitir solicitudes CORS
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-// Middleware to parse JSON
 app.use(express.json());
 
-// Configurar multer para manejar las subidas de archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Carpeta donde se guardarán los archivos subidos
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Renombrar el archivo para evitar conflictos
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
 const upload = multer({ storage });
 
-//post
 app.post("/upload", upload.single("image"), (req, res) => {
   res.json({ filePath: `/uploads/${req.file.filename}` });
 });
@@ -55,15 +56,12 @@ app.use("/user", auth, userRoutes);
 app.use("/provinces", provincesRoutes);
 app.use("/cities", citiesRoutes);
 app.use("/tourist-zones", touristZonesRoutes, commentRoutes);
-// Configurar para servir archivos estáticos desde el directorio 'uploads'
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Example of a protected route
 app.get("/protected", auth, (req, res) => {
   res.send("This is a protected route");
 });
 
-// Routes
 app.get("/", (req, res) => {
   res.send("Hello Sur360");
 });
