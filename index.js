@@ -58,9 +58,6 @@ app.use("/tourist-zones", touristZonesRoutes, commentRoutes);
 // Configurar para servir archivos estáticos desde el directorio 'uploads'
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Serve static files from the uploads folder
-app.use("/uploads", express.static("uploads"));
-
 // Example of a protected route
 app.get("/protected", auth, (req, res) => {
   res.send("This is a protected route");
