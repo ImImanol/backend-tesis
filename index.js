@@ -34,12 +34,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+//post
 app.post("/upload", upload.single("image"), (req, res) => {
-  // 'image' debe coincidir con el nombre del campo en el formulario
   res.json({ filePath: `/uploads/${req.file.filename}` });
 });
 
-// Connect to the database
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
