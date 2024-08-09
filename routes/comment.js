@@ -37,4 +37,24 @@ router.post("/:zoneId/comments", auth, async (req, res) => {
   }
 });
 
+router.delete("/:zoneId/comments/:commentId", auth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment || comment.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "No tienes permiso para eliminar este comentario." });
+    }
+
+    await comment.remove();
+    res.status(200).json({ message: "Comentario eliminado con éxito." });
+  } catch (err) {
+    console.error("Error eliminando el comentario", err);
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor", error: err.message });
+  }
+});
+
 module.exports = router;
